@@ -1,21 +1,11 @@
 ﻿using Airships.Models;
-using HarmonyLib;
 using UnityEngine;
 
 namespace Airships.Patches
 {
     static class Ship_Patch
     {
-        [HarmonyPatch(typeof(Ship), "Update")]
-        class Ship_Update_Patch
-        {
-            private static void Postfix(Ship __instance)
-            {
-                __instance.transform.rotation = Quaternion.Euler(0, __instance.transform.rotation.eulerAngles.y, 0);
-            }
-        }
-
-        [HarmonyPatch(typeof(Ship), nameof(Ship.FixedUpdate))]
+        //[HarmonyPatch(typeof(Ship), nameof(Ship.FixedUpdate))]
         class Ship_FixedUpdate_Patch
         {
             private static void Postfix(Ship __instance)
@@ -37,7 +27,6 @@ namespace Airships.Patches
                 __instance.m_body.AddForceAtPosition(
                     Vector3.up * Time.fixedDeltaTime * __instance.GetAdditionalData().VerticalForce,
                     __instance.m_mastObject.transform.position, ForceMode.VelocityChange);
-
 
                 //if (!__instance.GetAdditionalData().isLocked)
                 //    ___displayText.ShowText("Press to LOCK rotation", MyInput.Keybinds["RMB"].MainKey, 2, 0, false);

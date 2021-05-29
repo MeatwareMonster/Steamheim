@@ -77,13 +77,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\PlayerExtension.cs" />
     <Compile Include="Models\ShipExtension.cs" />
+    <Compile Include="Patches\Player.cs" />
     <Compile Include="Patches\Ship.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripts\Airship.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="airships" />
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Package\README.md" />
