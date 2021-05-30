@@ -157,7 +157,6 @@ public class Airship : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Jotunn.Logger.LogInfo($"{m_moveDir.x} {m_moveDir.y} {m_moveDir.z}");
         bool flag = HaveControllingPlayer();
         UpdateControlls(Time.fixedDeltaTime);
         if ((bool)m_nview && !m_nview.IsOwner())
@@ -179,7 +178,11 @@ public class Airship : MonoBehaviour
                 //zero += -base.transform.forward * m_backwardForce * (1f - Mathf.Abs(m_rudderValue));
                 break;
         }
-        transform.position += transform.up * m_moveDir.y * 50f * Time.deltaTime;
+
+        var body = GetComponentInChildren<Rigidbody>();
+        body.AddForceAtPosition(transform.up * m_moveDir.y * 50f * Time.deltaTime, body.worldCenterOfMass, ForceMode.VelocityChange);
+        //test
+        //transform.position += transform.up * m_moveDir.y * 50f * Time.deltaTime;
     }
 
     private void UpdateControlls(float dt)
