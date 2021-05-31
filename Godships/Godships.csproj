@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Models\PlayerExtension.cs" />
     <Compile Include="Models\ShipExtension.cs" />
+    <Compile Include="Patches\Ladder.cs" />
     <Compile Include="Patches\Player.cs" />
     <Compile Include="Patches\Ship.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />

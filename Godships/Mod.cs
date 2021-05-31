@@ -5,6 +5,7 @@
 // Project: Airships
 
 using BepInEx;
+using BepInEx.Configuration;
 using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -18,19 +19,23 @@ namespace Airships
     //[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     internal class Mod : BaseUnityPlugin
     {
-        public const string PluginGUID = "steamheim.Airships";
-        public const string PluginName = "SteamheimAirships";
+        public const string PluginGUID = "steamheim.Godships";
+        public const string PluginName = "SteamheimGodships";
         public const string PluginVersion = "1.0.0";
 
         private readonly Harmony harmony = new Harmony(PluginGUID);
 
         private AssetBundle EmbeddedResourceBundle;
 
+        public static ConfigEntry<float> TitanSpeed;
+        public static ConfigEntry<float> TitanTurnSpeed;
+        public static ConfigEntry<float> TitanLift;
+
         private void Awake()
         {
-            // Do all your init stuff here
-            // Acceptable value ranges can be defined to allow configuration via a slider in the BepInEx ConfigurationManager: https://github.com/BepInEx/BepInEx.ConfigurationManager
-            //Config.Bind<int>("Main Section", "Example configuration integer", 1, new ConfigDescription("This is an example config, using a range limitation for ConfigurationManager", new AcceptableValueRange<int>(0, 100)));
+            TitanSpeed = Config.Bind("Titan", "Titan speed", 100f, "Forward/backward speed for the Titan");
+            TitanTurnSpeed = Config.Bind("Titan", "Titan turn speed", 10f, "Forward/backward speed for the Titan");
+            TitanLift = Config.Bind("Titan", "Titan lift", 100f, "Forward/backward speed for the Titan");
 
             // Jotunn comes with its own Logger class to provide a consistent Log style for all mods using it
             Jotunn.Logger.LogInfo("ModStub has landed");
@@ -58,6 +63,7 @@ namespace Airships
         {
             var prefab = EmbeddedResourceBundle.LoadAsset<GameObject>("Assets/CustomItems/Steampunk/Titan.prefab");
             prefab.AddComponent<Airship>();
+            prefab.GetComponent<Rigidbody>().freezeRotation = true;
             var titan = new CustomPiece(prefab, "Hammer", true);
             PieceManager.Instance.AddPiece(titan);
         }

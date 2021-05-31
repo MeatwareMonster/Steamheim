@@ -14,7 +14,8 @@ namespace Airships.Patches
                 var airship = attachPoint.gameObject.GetComponentInParent<Airship>();
                 if (airship != null)
                 {
-                    __instance.GetAdditionalData().m_airship = airship;
+                    //airship.ControlStartTime = Time.time;
+                    //__instance.GetAdditionalData().m_airship = airship;
                     airship.m_nview.InvokeRPC("RequestControl", __instance.GetZDOID());
                 }
             }
@@ -40,17 +41,26 @@ namespace Airships.Patches
         [HarmonyPatch(typeof(Player), nameof(Player.SetControls))]
         class Player_SetControls_Patch
         {
-            private static bool Prefix(Player __instance, Vector3 movedir, bool jump)
+            private static bool Prefix(Player __instance, Vector3 movedir)
             {
                 var airship = __instance.GetAdditionalData().m_airship;
 
-                if (airship == null || jump) return true;
+                if (airship == null)
+                {
+                    return true;
+                }
 
-                if (Input.GetKey(KeyCode.UpArrow))
+                if ((ZInput.GetButtonDown("Use") || ZInput.GetButtonDown("JoyUse")) && airship.ControlStartTime < Time.time - 1f)
+                {
+                    __instance.AttachStop();
+                    return true;
+                }
+
+                if (ZInput.GetButton("Jump") || ZInput.GetButton("JoyJump"))
                 {
                     movedir.y += 1;
                 }
-                if (Input.GetKey(KeyCode.DownArrow))
+                if (ZInput.GetButton("Crouch") || ZInput.GetButton("JoyCrouch"))
                 {
                     movedir.y -= 1;
                 }
