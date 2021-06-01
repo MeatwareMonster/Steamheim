@@ -88,6 +88,7 @@
     <Compile Include="Scripts\Airship.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="airships" />
     <None Include="app.config" />
     <EmbeddedResource Include="godships" />
     <None Include="packages.config" />

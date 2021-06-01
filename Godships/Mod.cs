@@ -25,45 +25,60 @@ namespace Airships
 
         private readonly Harmony harmony = new Harmony(PluginGUID);
 
-        private AssetBundle EmbeddedResourceBundle;
+        private AssetBundle AirshipBundle;
+        private AssetBundle GodshipBundle;
 
-        public static ConfigEntry<float> TitanSpeed;
-        public static ConfigEntry<float> TitanTurnSpeed;
-        public static ConfigEntry<float> TitanLift;
+        public static ConfigEntry<float> GodshipSpeed;
+        public static ConfigEntry<float> GodshipTurnSpeed;
+        public static ConfigEntry<float> GodshipLift;
 
         private void Awake()
         {
-            TitanSpeed = Config.Bind("Titan", "Titan speed", 100f, "Forward/backward speed for the Titan");
-            TitanTurnSpeed = Config.Bind("Titan", "Titan turn speed", 10f, "Forward/backward speed for the Titan");
-            TitanLift = Config.Bind("Titan", "Titan lift", 100f, "Forward/backward speed for the Titan");
+            GodshipSpeed = Config.Bind("Godship", "Godship speed", 100f, "Forward/backward speed for godships");
+            GodshipTurnSpeed = Config.Bind("Godship", "Godship turn speed", 10f, "Turn speed for godships");
+            GodshipLift = Config.Bind("Godship", "Godship lift", 100f, "Vertical speed for godships");
 
             // Jotunn comes with its own Logger class to provide a consistent Log style for all mods using it
             Jotunn.Logger.LogInfo("ModStub has landed");
 
-            LoadAssetBundle();
-            AddAirship();
-            UnloadAssetBundle();
+            LoadAssetBundles();
+            AddAirships();
+            AddGodships();
+            UnloadAssetBundles();
 
             harmony.PatchAll();
         }
 
-        private void LoadAssetBundle()
+        private void LoadAssetBundles()
         {
             // Load asset bundle from embedded resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(Mod).Assembly.GetManifestResourceNames())}");
-            EmbeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources("godships", typeof(Mod).Assembly);
+            GodshipBundle = AssetUtils.LoadAssetBundleFromResources("godships", typeof(Mod).Assembly);
+            AirshipBundle = AssetUtils.LoadAssetBundleFromResources("airships", typeof(Mod).Assembly);
         }
 
-        private void UnloadAssetBundle()
+        private void UnloadAssetBundles()
         {
-            EmbeddedResourceBundle.Unload(false);
+            AirshipBundle.Unload(false);
+            GodshipBundle.Unload(false);
         }
 
-        private void AddAirship()
+        private void AddAirships()
         {
-            var prefab = EmbeddedResourceBundle.LoadAsset<GameObject>("Assets/CustomItems/Steampunk/Titan.prefab");
+            var prefab = AirshipBundle.LoadAsset<GameObject>("Assets/CustomItems/Steampunk/Airship/Airship.prefab");
+            prefab.AddComponent<Airship>();
+            prefab.GetComponentInChildren<Rigidbody>().freezeRotation = true;
+            //prefab.GetComponent<Rigidbody>().isKinematic = true;
+            var airship = new CustomPiece(prefab, "Hammer", true);
+            PieceManager.Instance.AddPiece(airship);
+        }
+
+        private void AddGodships()
+        {
+            var prefab = GodshipBundle.LoadAsset<GameObject>("Assets/CustomItems/Steampunk/Titan.prefab");
             prefab.AddComponent<Airship>();
             prefab.GetComponent<Rigidbody>().freezeRotation = true;
+            //prefab.GetComponent<Rigidbody>().isKinematic = true;
             var titan = new CustomPiece(prefab, "Hammer", true);
             PieceManager.Instance.AddPiece(titan);
         }

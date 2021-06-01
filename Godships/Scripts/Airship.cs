@@ -183,9 +183,14 @@ public class Airship : MonoBehaviour
         //}
 
         var body = GetComponentInChildren<Rigidbody>();
-        body.AddForceAtPosition(transform.up * m_moveDir.y * Mod.TitanLift.Value * Time.deltaTime, body.worldCenterOfMass, ForceMode.VelocityChange);
-        body.AddForceAtPosition(transform.forward * m_moveDir.z * Mod.TitanSpeed.Value * Time.deltaTime, body.worldCenterOfMass, ForceMode.VelocityChange);
-        body.AddTorque(transform.up * m_moveDir.x * Mod.TitanTurnSpeed.Value * Time.deltaTime, ForceMode.VelocityChange);
+        body.AddForceAtPosition(transform.up * m_moveDir.y * Mod.GodshipLift.Value * Time.deltaTime, body.worldCenterOfMass, ForceMode.VelocityChange);
+        body.AddForceAtPosition(transform.forward * m_moveDir.z * Mod.GodshipSpeed.Value * Time.deltaTime, body.worldCenterOfMass, ForceMode.VelocityChange);
+        body.AddTorque(transform.up * m_moveDir.x * Mod.GodshipTurnSpeed.Value * Time.deltaTime, ForceMode.VelocityChange);
+
+        //var body = GetComponentInChildren<Rigidbody>();
+        //body.MovePosition(transform.position + transform.TransformDirection(0, m_moveDir.y * Mod.GodshipLift.Value * Time.deltaTime, m_moveDir.z * Mod.GodshipSpeed.Value * Time.deltaTime));
+        //Quaternion deltaRotation = Quaternion.Euler(new Vector3(0, m_moveDir.x * Mod.GodshipTurnSpeed.Value, 0) * Time.fixedDeltaTime);
+        //body.MoveRotation(body.rotation * deltaRotation);
     }
 
     //private void UpdateControlls(float dt)
@@ -331,6 +336,7 @@ public class Airship : MonoBehaviour
         {
             Player.m_localPlayer.GetAdditionalData().m_airship = this;
             ControlStartTime = Time.time;
+            GameCamera.m_instance.m_distance = 20f;
             Jotunn.Logger.LogInfo("Airship control granted.");
         }
         else

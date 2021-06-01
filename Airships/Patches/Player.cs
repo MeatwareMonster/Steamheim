@@ -40,17 +40,17 @@ namespace Airships.Patches
         [HarmonyPatch(typeof(Player), nameof(Player.SetControls))]
         class Player_SetControls_Patch
         {
-            private static bool Prefix(Player __instance, Vector3 movedir, bool jump)
+            private static bool Prefix(Player __instance, Vector3 movedir, bool jump, bool crouch)
             {
                 var airship = __instance.GetAdditionalData().m_airship;
 
-                if (airship == null || jump) return true;
+                if (airship == null || ZInput.GetButtonDown("Use") || ZInput.GetButtonDown("JoyUse")) return true;
 
-                if (Input.GetKey(KeyCode.UpArrow))
+                if (jump)
                 {
                     movedir.y += 1;
                 }
-                if (Input.GetKey(KeyCode.DownArrow))
+                if (crouch)
                 {
                     movedir.y -= 1;
                 }

@@ -31,6 +31,8 @@ public class Airship : MonoBehaviour
 
     public ZNetView m_nview;
 
+    public float ControlStartTime;
+
     private void Awake()
     {
         m_nview = GetComponent<ZNetView>();
@@ -60,9 +62,9 @@ public class Airship : MonoBehaviour
 
     private void Start()
     {
-        m_nview.Register("Stop", RPC_Stop);
-        m_nview.Register("Forward", RPC_Forward);
-        m_nview.Register("Backward", RPC_Backward);
+        //m_nview.Register("Stop", RPC_Stop);
+        //m_nview.Register("Forward", RPC_Forward);
+        //m_nview.Register("Backward", RPC_Backward);
         //m_nview.Register<float>("Rudder", RPC_Rudder);
         InvokeRepeating("UpdateOwner", 2f, 2f);
     }
@@ -77,18 +79,18 @@ public class Airship : MonoBehaviour
 
     public void ApplyMovementControls(Vector3 dir)
     {
-        bool flag = (double)dir.z > 0.5;
-        bool flag2 = (double)dir.z < -0.5;
-        if (flag && !m_forwardPressed)
-        {
-            Forward();
-        }
-        if (flag2 && !m_backwardPressed)
-        {
-            Backward();
-        }
-        m_forwardPressed = flag;
-        m_backwardPressed = flag2;
+        //bool flag = (double)dir.z > 0.5;
+        //bool flag2 = (double)dir.z < -0.5;
+        //if (flag && !m_forwardPressed)
+        //{
+        //    Forward();
+        //}
+        //if (flag2 && !m_backwardPressed)
+        //{
+        //    Backward();
+        //}
+        //m_forwardPressed = flag;
+        //m_backwardPressed = flag2;
 
         m_moveDir = dir;
     }
@@ -108,92 +110,92 @@ public class Airship : MonoBehaviour
         m_nview.InvokeRPC("Stop");
     }
 
-    private void RPC_Stop(long sender)
-    {
-        m_speed = Speed.Stop;
-    }
+    //private void RPC_Stop(long sender)
+    //{
+    //    m_speed = Speed.Stop;
+    //}
 
-    private void RPC_Forward(long sender)
-    {
-        switch (m_speed)
-        {
-            case Speed.Stop:
-                m_speed = Speed.Slow;
-                break;
-            case Speed.Slow:
-                m_speed = Speed.Half;
-                break;
-            case Speed.Half:
-                m_speed = Speed.Full;
-                break;
-            case Speed.Back:
-                m_speed = Speed.Stop;
-                break;
-            case Speed.Full:
-                break;
-        }
-    }
+    //private void RPC_Forward(long sender)
+    //{
+    //    switch (m_speed)
+    //    {
+    //        case Speed.Stop:
+    //            m_speed = Speed.Slow;
+    //            break;
+    //        case Speed.Slow:
+    //            m_speed = Speed.Half;
+    //            break;
+    //        case Speed.Half:
+    //            m_speed = Speed.Full;
+    //            break;
+    //        case Speed.Back:
+    //            m_speed = Speed.Stop;
+    //            break;
+    //        case Speed.Full:
+    //            break;
+    //    }
+    //}
 
-    private void RPC_Backward(long sender)
-    {
-        switch (m_speed)
-        {
-            case Speed.Stop:
-                m_speed = Speed.Back;
-                break;
-            case Speed.Slow:
-                m_speed = Speed.Stop;
-                break;
-            case Speed.Half:
-                m_speed = Speed.Slow;
-                break;
-            case Speed.Full:
-                m_speed = Speed.Half;
-                break;
-            case Speed.Back:
-                break;
-        }
-    }
+    //private void RPC_Backward(long sender)
+    //{
+    //    switch (m_speed)
+    //    {
+    //        case Speed.Stop:
+    //            m_speed = Speed.Back;
+    //            break;
+    //        case Speed.Slow:
+    //            m_speed = Speed.Stop;
+    //            break;
+    //        case Speed.Half:
+    //            m_speed = Speed.Slow;
+    //            break;
+    //        case Speed.Full:
+    //            m_speed = Speed.Half;
+    //            break;
+    //        case Speed.Back:
+    //            break;
+    //    }
+    //}
 
     private void FixedUpdate()
     {
-        bool flag = HaveControllingPlayer();
-        UpdateControlls(Time.fixedDeltaTime);
+        //bool flag = HaveControllingPlayer();
+        //UpdateControlls(Time.fixedDeltaTime);
         if ((bool)m_nview && !m_nview.IsOwner())
         {
             return;
         }
-        if (!flag && (m_speed == Speed.Slow || m_speed == Speed.Back))
-        {
-            m_speed = Speed.Stop;
-        }
+        //if (!flag && (m_speed == Speed.Slow || m_speed == Speed.Back))
+        //{
+        //    m_speed = Speed.Stop;
+        //}
 
-        Vector3 zero = Vector3.zero;
-        switch (m_speed)
-        {
-            case Speed.Slow:
-                //zero += base.transform.forward * m_backwardForce * (1f - Mathf.Abs(m_rudderValue));
-                break;
-            case Speed.Back:
-                //zero += -base.transform.forward * m_backwardForce * (1f - Mathf.Abs(m_rudderValue));
-                break;
-        }
+        //Vector3 zero = Vector3.zero;
+        //switch (m_speed)
+        //{
+        //    case Speed.Slow:
+        //        //zero += base.transform.forward * m_backwardForce * (1f - Mathf.Abs(m_rudderValue));
+        //        break;
+        //    case Speed.Back:
+        //        //zero += -base.transform.forward * m_backwardForce * (1f - Mathf.Abs(m_rudderValue));
+        //        break;
+        //}
 
         var body = GetComponentInChildren<Rigidbody>();
         body.AddForceAtPosition(transform.up * m_moveDir.y * 50f * Time.deltaTime, body.worldCenterOfMass, ForceMode.VelocityChange);
-        //test
-        //transform.position += transform.up * m_moveDir.y * 50f * Time.deltaTime;
+        body.AddForceAtPosition(transform.forward * m_moveDir.z * 50f * Time.deltaTime, body.worldCenterOfMass, ForceMode.VelocityChange);
+        body.AddTorque(transform.up * m_moveDir.x * 1f * Time.deltaTime, ForceMode.VelocityChange);
     }
 
-    private void UpdateControlls(float dt)
-    {
-        if (m_nview.IsOwner())
-        {
-            m_nview.GetZDO().Set("forward", (int)m_speed);
-            return;
-        }
-        m_speed = (Speed)m_nview.GetZDO().GetInt("forward");
-    }
+    //private void UpdateControlls(float dt)
+    //{
+    //    if (m_nview.IsOwner())
+    //    {
+    //        m_nview.GetZDO().Set("forward", (int)m_speed);
+    //        return;
+    //    }
+    //    m_speed = (Speed)m_nview.GetZDO().GetInt("forward");
+    //}
 
     //private void UpdateOwner()
     //{
@@ -287,10 +289,10 @@ public class Airship : MonoBehaviour
         return m_nview.IsOwner();
     }
 
-    public Speed GetSpeedSetting()
-    {
-        return m_speed;
-    }
+    //public Speed GetSpeedSetting()
+    //{
+    //    return m_speed;
+    //}
 
     private void RPC_RequestControl(long sender, ZDOID playerID)
     {
@@ -327,6 +329,7 @@ public class Airship : MonoBehaviour
         if (granted)
         {
             Player.m_localPlayer.GetAdditionalData().m_airship = this;
+            ControlStartTime = Time.time;
             Jotunn.Logger.LogInfo("Airship control granted.");
         }
         else

@@ -32,6 +32,7 @@ namespace Airships.Patches
                     if (airship != null)
                     {
                         Player.m_localPlayer.GetAdditionalData().m_airship = null;
+                        GameCamera.m_instance.m_distance = 4f;
                         airship.m_nview.InvokeRPC("ReleaseControl", __instance.GetZDOID());
                     }
                 }
