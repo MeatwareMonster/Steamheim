@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{56E4540A-D431-4ACD-BF18-48291B1F315B}</ProjectGuid>
+    <ProjectGuid>{5512455E-AB95-401B-8317-B65CE74F10BE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Airships</RootNamespace>
@@ -78,17 +78,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\PlayerExtension.cs" />
-    <Compile Include="Models\ShipExtension.cs" />
+    <Compile Include="Models\AirshipConfig.cs" />
+    <Compile Include="Patches\Ladder.cs" />
     <Compile Include="Patches\Player.cs" />
-    <Compile Include="Patches\Ship.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\Airship.cs" />
+    <Compile Include="Services\AirshipConfigManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="airships" />
     <None Include="app.config" />
+    <None Include="Assets\airshipConfig.json" />
+    <EmbeddedResource Include="godships" />
     <None Include="packages.config" />
     <None Include="Package\README.md" />
   </ItemGroup>
@@ -104,6 +107,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot; " />
+    <Exec Command="xcopy &quot;$(ProjectDir)Assets&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\Airships\Assets\&quot; /S /Y" />
   </Target>
   <PropertyGroup>
     <BuildDependsOn>

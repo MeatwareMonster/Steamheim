@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Titan",
+    "bundleName":  "godships",
+    "prefabPath": "Assets/CustomItems/Steampunk/Titan.prefab",
+    "item": "Titan", 
+    "description": "Feared by the gods.",
+    "pieceTable": "Hammer",
+    "enabled": true,
+    "resources": [
+      {
+        "item": "Wood",
+        "amount": 5
+      },
+      {
+        "item": "Stone",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "name": "Airship",
+    "bundleName": "airships",
+    "prefabPath": "Assets/CustomItems/Steampunk/Airship/Airship.prefab",
+    "item": "Airship",
+    "description": "Patrol ship.",
+    "pieceTable":  "Hammer", 
+    "enabled": true,
+    "resources": [
+      {
+        "item": "Wood",
+        "amount": 10
+      }
+    ]
+  }
+]

@@ -4,9 +4,12 @@
 // File:    Airships.cs
 // Project: Airships
 
+using System.Collections.Generic;
+using Airships.Models;
+using Airships.Services;
 using BepInEx;
+using BepInEx.Configuration;
 using HarmonyLib;
-using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -18,48 +21,61 @@ namespace Airships
     //[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     internal class Mod : BaseUnityPlugin
     {
-        public const string PluginGUID = "steamheim.Airships";
-        public const string PluginName = "SteamheimAirships";
+        public const string PluginGUID = "steamheim.Godships";
+        public const string PluginName = "SteamheimGodships";
         public const string PluginVersion = "1.0.0";
 
         private readonly Harmony harmony = new Harmony(PluginGUID);
 
-        private AssetBundle EmbeddedResourceBundle;
+        public static ConfigEntry<float> GodshipSpeed;
+        public static ConfigEntry<float> GodshipTurnSpeed;
+        public static ConfigEntry<float> GodshipLift;
+
+        private readonly Dictionary<string, AssetBundle> EmbeddedResourceBundles = new Dictionary<string, AssetBundle>();
 
         private void Awake()
         {
-            // Do all your init stuff here
-            // Acceptable value ranges can be defined to allow configuration via a slider in the BepInEx ConfigurationManager: https://github.com/BepInEx/BepInEx.ConfigurationManager
-            //Config.Bind<int>("Main Section", "Example configuration integer", 1, new ConfigDescription("This is an example config, using a range limitation for ConfigurationManager", new AcceptableValueRange<int>(0, 100)));
+            GodshipSpeed = Config.Bind("Godship", "Godship speed", 100f, "Forward/backward speed for godships");
+            GodshipTurnSpeed = Config.Bind("Godship", "Godship turn speed", 10f, "Turn speed for godships");
+            GodshipLift = Config.Bind("Godship", "Godship lift", 100f, "Vertical speed for godships");
 
             // Jotunn comes with its own Logger class to provide a consistent Log style for all mods using it
             Jotunn.Logger.LogInfo("ModStub has landed");
 
-            LoadAssetBundle();
-            AddAirship();
-            UnloadAssetBundle();
+            LoadAssetBundles();
+            AddAirships();
+            UnloadAssetBundles();
 
             harmony.PatchAll();
         }
 
-        private void LoadAssetBundle()
+        private void LoadAssetBundles()
         {
             // Load asset bundle from embedded resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(Mod).Assembly.GetManifestResourceNames())}");
-            EmbeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources("airships", typeof(Mod).Assembly);
+            EmbeddedResourceBundles["godships"] = AssetUtils.LoadAssetBundleFromResources("godships", typeof(Mod).Assembly);
+            EmbeddedResourceBundles["airships"] = AssetUtils.LoadAssetBundleFromResources("airships", typeof(Mod).Assembly);
         }
 
-        private void UnloadAssetBundle()
+        private void UnloadAssetBundles()
         {
-            EmbeddedResourceBundle.Unload(false);
+            foreach (var embeddedResourceBundle in EmbeddedResourceBundles)
+            {
+                embeddedResourceBundle.Value.Unload(false);
+            }
         }
 
-        private void AddAirship()
+        private void AddAirships()
         {
-            var prefab = EmbeddedResourceBundle.LoadAsset<GameObject>("Assets/CustomItems/Steampunk/Airship/Airship.prefab");
-            prefab.AddComponent<Airship>();
-            var airship = new CustomPiece(prefab, "Hammer", true);
-            PieceManager.Instance.AddPiece(airship);
+            var airshipConfigs = AirshipConfigManager.LoadShipsFromJson("Airships/Assets/airshipConfig.json");
+            airshipConfigs.ForEach(airshipConfig =>
+            {
+                // Load prefab from asset bundle
+                var prefab = EmbeddedResourceBundles[airshipConfig.bundleName].LoadAsset<GameObject>(airshipConfig.prefabPath);
+                prefab.AddComponent<Airship>();
+                prefab.GetComponentInChildren<Rigidbody>().freezeRotation = true;
+                PieceManager.Instance.AddPiece(AirshipConfig.Convert(prefab, airshipConfig));
+            });
         }
     }
 }

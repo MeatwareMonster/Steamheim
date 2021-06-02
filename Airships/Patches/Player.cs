@@ -14,7 +14,8 @@ namespace Airships.Patches
                 var airship = attachPoint.gameObject.GetComponentInParent<Airship>();
                 if (airship != null)
                 {
-                    __instance.GetAdditionalData().m_airship = airship;
+                    //airship.ControlStartTime = Time.time;
+                    //__instance.GetAdditionalData().m_airship = airship;
                     airship.m_nview.InvokeRPC("RequestControl", __instance.GetZDOID());
                 }
             }
@@ -31,6 +32,7 @@ namespace Airships.Patches
                     if (airship != null)
                     {
                         Player.m_localPlayer.GetAdditionalData().m_airship = null;
+                        GameCamera.m_instance.m_distance = 4f;
                         airship.m_nview.InvokeRPC("ReleaseControl", __instance.GetZDOID());
                     }
                 }
@@ -40,17 +42,26 @@ namespace Airships.Patches
         [HarmonyPatch(typeof(Player), nameof(Player.SetControls))]
         class Player_SetControls_Patch
         {
-            private static bool Prefix(Player __instance, Vector3 movedir, bool jump, bool crouch)
+            private static bool Prefix(Player __instance, Vector3 movedir)
             {
                 var airship = __instance.GetAdditionalData().m_airship;
 
-                if (airship == null || ZInput.GetButtonDown("Use") || ZInput.GetButtonDown("JoyUse")) return true;
+                if (airship == null)
+                {
+                    return true;
+                }
 
-                if (jump)
+                if ((ZInput.GetButtonDown("Use") || ZInput.GetButtonDown("JoyUse")) && airship.ControlStartTime < Time.time - 1f)
+                {
+                    __instance.AttachStop();
+                    return true;
+                }
+
+                if (ZInput.GetButton("Jump") || ZInput.GetButton("JoyJump"))
                 {
                     movedir.y += 1;
                 }
-                if (crouch)
+                if (ZInput.GetButton("Crouch") || ZInput.GetButton("JoyCrouch"))
                 {
                     movedir.y -= 1;
                 }
