@@ -19,6 +19,8 @@ public class Airship : MonoBehaviour
 
     public float ControlStartTime;
 
+    public float m_cameraDistance;
+
     public float m_lift;
     public float m_thrust;
     public float m_turnSpeed;
@@ -46,6 +48,12 @@ public class Airship : MonoBehaviour
         {
             base.enabled = false;
         }
+
+        m_body.constraints =
+            RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        m_body.centerOfMass = Vector3.zero;
+        m_body.inertiaTensorRotation = Quaternion.identity;
+
         //m_body.maxDepenetrationVelocity = 2f;
         //Heightmap.ForceGenerateAll();
     }

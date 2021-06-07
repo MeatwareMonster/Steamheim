@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using Airships.Models;
 using Airships.Services;
 using BepInEx;
-using BepInEx.Configuration;
 using HarmonyLib;
 using Jotunn.Managers;
 using Jotunn.Utils;
@@ -21,23 +20,16 @@ namespace Airships
     //[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     internal class Mod : BaseUnityPlugin
     {
-        public const string PluginGUID = "steamheim.Godships";
-        public const string PluginName = "SteamheimGodships";
+        public const string PluginGUID = "steamheim.Airships";
+        public const string PluginName = "Steamheim Airships";
         public const string PluginVersion = "1.0.0";
 
         private readonly Harmony harmony = new Harmony(PluginGUID);
-
-        public static ConfigEntry<float> GodshipSpeed;
-        public static ConfigEntry<float> GodshipTurnSpeed;
-        public static ConfigEntry<float> GodshipLift;
 
         private readonly Dictionary<string, AssetBundle> EmbeddedResourceBundles = new Dictionary<string, AssetBundle>();
 
         private void Awake()
         {
-            GodshipSpeed = Config.Bind("Godship", "Godship speed", 100f, "Forward/backward speed for godships");
-            GodshipTurnSpeed = Config.Bind("Godship", "Godship turn speed", 10f, "Turn speed for godships");
-            GodshipLift = Config.Bind("Godship", "Godship lift", 100f, "Vertical speed for godships");
 
             // Jotunn comes with its own Logger class to provide a consistent Log style for all mods using it
             Jotunn.Logger.LogInfo("ModStub has landed");
@@ -78,8 +70,13 @@ namespace Airships
                     airship.m_thrust = airshipConfig.thrust;
                     airship.m_lift = airshipConfig.lift;
                     airship.m_turnSpeed = airshipConfig.turnSpeed;
+                    airship.m_cameraDistance = airshipConfig.cameraDistance;
                     var airshipBody = prefab.GetComponent<Rigidbody>();
-                    airshipBody.freezeRotation = true;
+                    //airshipBody.freezeRotation = true;
+                    //airshipBody.constraints =
+                    //    RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+                    //airshipBody.centerOfMass = Vector3.zero;
+                    //airshipBody.inertiaTensorRotation = Quaternion.identity;
                     airshipBody.mass = airshipConfig.mass;
                     airshipBody.drag = airshipConfig.drag;
                     var airshipPiece = AirshipConfig.Convert(prefab, airshipConfig);

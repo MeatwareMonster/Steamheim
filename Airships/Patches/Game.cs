@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace Godships.Patches
+namespace Airships.Patches
 {
     class Game_Patch
     {

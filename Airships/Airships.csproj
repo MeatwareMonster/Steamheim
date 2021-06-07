@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Models\PlayerExtension.cs" />
     <Compile Include="Models\AirshipConfig.cs" />
+    <Compile Include="Patches\GameCamera.cs" />
     <Compile Include="Patches\Game.cs" />
     <Compile Include="Patches\Ladder.cs" />
     <Compile Include="Patches\Player.cs" />

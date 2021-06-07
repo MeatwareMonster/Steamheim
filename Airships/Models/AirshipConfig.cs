@@ -36,6 +36,7 @@ namespace Airships.Models
         public float lift;
         public float drag;
         public float turnSpeed;
+        public float cameraDistance;
         public bool enabled;
         public List<AirshipConfigRequirement> resources;
 

@@ -9,6 +9,8 @@ namespace Airships.Patches
     static class Player_Patch
     {
         private static GameObject text;
+        private static float storedCameraDistance;
+        private static float storedMaxCameraDistance;
 
         [HarmonyPatch(typeof(Player), nameof(Player.AttachStart))]
         class Player_AttachStart_Patch
@@ -20,6 +22,10 @@ namespace Airships.Patches
                 {
                     //airship.ControlStartTime = Time.time;
                     //__instance.GetAdditionalData().m_airship = airship;
+                    storedCameraDistance = GameCamera.instance.m_distance;
+                    storedMaxCameraDistance = GameCamera.instance.m_maxDistance;
+                    GameCamera.instance.m_distance = airship.m_cameraDistance;
+                    GameCamera.instance.m_maxDistance = airship.m_cameraDistance;
                     text = GUIManager.Instance.CreateText("JötunnLib, the Valheim Lib", GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.7f),
                         new Vector2(0f, 450f), GUIManager.Instance.AveriaSerifBold, 18, GUIManager.Instance.ValheimOrange, true, Color.black, 400f, 30f, false);
                     airship.m_nview.InvokeRPC("RequestControl", __instance.GetZDOID());
@@ -38,6 +44,8 @@ namespace Airships.Patches
                     if (airship != null)
                     {
                         Player.m_localPlayer.GetAdditionalData().m_airship = null;
+                        GameCamera.instance.m_distance = storedCameraDistance;
+                        GameCamera.instance.m_maxDistance = storedMaxCameraDistance;
                         Object.Destroy(text);
                         airship.m_nview.InvokeRPC("ReleaseControl", __instance.GetZDOID());
                     }
