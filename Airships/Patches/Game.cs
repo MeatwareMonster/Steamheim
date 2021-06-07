@@ -9,6 +9,8 @@ namespace Godships.Patches
         {
             private static void Prefix(Game __instance)
             {
+                // prevent falling to death on spawn
+                // zoom camera way out when controlling ship
             }
         }
     }

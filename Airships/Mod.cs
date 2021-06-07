@@ -82,6 +82,8 @@ namespace Airships
                     airshipBody.freezeRotation = true;
                     airshipBody.mass = airshipConfig.mass;
                     airshipBody.drag = airshipConfig.drag;
+                    var airshipPiece = AirshipConfig.Convert(prefab, airshipConfig);
+                    airshipPiece.Piece.m_name = airshipConfig.name;
                     PieceManager.Instance.AddPiece(AirshipConfig.Convert(prefab, airshipConfig));
                 }
             });

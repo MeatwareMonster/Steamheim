@@ -29,7 +29,6 @@ namespace Airships.Models
         public string name;
         public string bundleName;
         public string prefabPath;
-        public string item;
         public string description;
         public string pieceTable;
         public float mass;

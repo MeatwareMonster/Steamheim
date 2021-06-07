@@ -28,7 +28,7 @@
     ]
   },
   {
-    "name": "SteamShip",
+    "name": "Sun Scout",
     "bundleName": "airships",
     "prefabPath": "Assets/CustomItems/Steampunk/Airship/Airship.prefab",
     "item": "Airship",
