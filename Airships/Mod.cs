@@ -70,11 +70,20 @@ namespace Airships
             var airshipConfigs = AirshipConfigManager.LoadShipsFromJson("Airships/Assets/airshipConfig.json");
             airshipConfigs.ForEach(airshipConfig =>
             {
-                // Load prefab from asset bundle
-                var prefab = EmbeddedResourceBundles[airshipConfig.bundleName].LoadAsset<GameObject>(airshipConfig.prefabPath);
-                prefab.AddComponent<Airship>();
-                prefab.GetComponentInChildren<Rigidbody>().freezeRotation = true;
-                PieceManager.Instance.AddPiece(AirshipConfig.Convert(prefab, airshipConfig));
+                if (airshipConfig.enabled)
+                {
+                    // Load prefab from asset bundle
+                    var prefab = EmbeddedResourceBundles[airshipConfig.bundleName].LoadAsset<GameObject>(airshipConfig.prefabPath);
+                    var airship = prefab.AddComponent<Airship>();
+                    airship.m_thrust = airshipConfig.thrust;
+                    airship.m_lift = airshipConfig.lift;
+                    airship.m_turnSpeed = airshipConfig.turnSpeed;
+                    var airshipBody = prefab.GetComponent<Rigidbody>();
+                    airshipBody.freezeRotation = true;
+                    airshipBody.mass = airshipConfig.mass;
+                    airshipBody.drag = airshipConfig.drag;
+                    PieceManager.Instance.AddPiece(AirshipConfig.Convert(prefab, airshipConfig));
+                }
             });
         }
     }

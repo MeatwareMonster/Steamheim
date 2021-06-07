@@ -32,6 +32,11 @@ namespace Airships.Models
         public string item;
         public string description;
         public string pieceTable;
+        public float mass;
+        public float thrust;
+        public float lift;
+        public float drag;
+        public float turnSpeed;
         public bool enabled;
         public List<AirshipConfigRequirement> resources;
 

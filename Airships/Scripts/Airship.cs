@@ -1,38 +1,33 @@
 ﻿using System;
-using Airships;
+using System.Collections.Generic;
 using Airships.Models;
 using UnityEngine;
 
 public class Airship : MonoBehaviour
 {
-    public enum Speed
-    {
-        Stop,
-        Back,
-        Slow,
-        Half,
-        Full
-    }
-
     public Player m_controllingPlayer;
-
-    public bool m_forwardPressed;
-
-    public bool m_backwardPressed;
-
-    public Speed m_speed;
 
     public Vector3 m_moveDir;
 
-    //private List<Player> m_players = new List<Player>();
+    private List<Player> m_players = new List<Player>();
 
-    //private static List<Airship> m_currentShips = new List<Airship>();
+    private static List<Airship> m_currentAirships = new List<Airship>();
 
-    //private Rigidbody m_body;
+    private Rigidbody m_body;
 
     public ZNetView m_nview;
 
     public float ControlStartTime;
+
+    public float m_lift;
+    public float m_thrust;
+    public float m_turnSpeed;
+
+    public float m_throttleChangeSpeed = 0.5f;
+    public float m_liftChangeSpeed = 0.5f;
+
+    public float ThrottleZ;
+    public float ThrottleY;
 
     private void Awake()
     {
@@ -41,7 +36,7 @@ public class Airship : MonoBehaviour
         m_nview.Register<ZDOID>("ReleaseControl", RPC_ReleaseControl);
         m_nview.Register<bool>("RequestRespons", RPC_RequestRespons);
 
-        //m_body = GetComponent<Rigidbody>();
+        m_body = GetComponent<Rigidbody>();
         WearNTear component = GetComponent<WearNTear>();
         if ((bool)component)
         {
@@ -53,110 +48,22 @@ public class Airship : MonoBehaviour
         }
         //m_body.maxDepenetrationVelocity = 2f;
         //Heightmap.ForceGenerateAll();
-        //m_sailCloth = m_sailObject.GetComponentInChildren<Cloth>();
     }
 
-    //public bool CanBeRemoved()
-    //{
-    //    return m_players.Count == 0;
-    //}
+    public bool CanBeRemoved()
+    {
+        return m_players.Count == 0;
+    }
 
     private void Start()
     {
-        //m_nview.Register("Stop", RPC_Stop);
-        //m_nview.Register("Forward", RPC_Forward);
-        //m_nview.Register("Backward", RPC_Backward);
-        //m_nview.Register<float>("Rudder", RPC_Rudder);
         InvokeRepeating("UpdateOwner", 2f, 2f);
     }
 
-    //private void PrintStats()
-    //{
-    //    if (m_players.Count != 0)
-    //    {
-    //        ZLog.Log("Vel:" + m_body.velocity.magnitude.ToString("0.0"));
-    //    }
-    //}
-
     public void ApplyMovementControls(Vector3 dir)
     {
-        //bool flag = (double)dir.z > 0.5;
-        //bool flag2 = (double)dir.z < -0.5;
-        //if (flag && !m_forwardPressed)
-        //{
-        //    Forward();
-        //}
-        //if (flag2 && !m_backwardPressed)
-        //{
-        //    Backward();
-        //}
-        //m_forwardPressed = flag;
-        //m_backwardPressed = flag2;
-
         m_moveDir = dir;
     }
-
-    public void Forward()
-    {
-        m_nview.InvokeRPC("Forward");
-    }
-
-    public void Backward()
-    {
-        m_nview.InvokeRPC("Backward");
-    }
-
-    public void Stop()
-    {
-        m_nview.InvokeRPC("Stop");
-    }
-
-    //private void RPC_Stop(long sender)
-    //{
-    //    m_speed = Speed.Stop;
-    //}
-
-    //private void RPC_Forward(long sender)
-    //{
-    //    switch (m_speed)
-    //    {
-    //        case Speed.Stop:
-    //            m_speed = Speed.Slow;
-    //            break;
-    //        case Speed.Slow:
-    //            m_speed = Speed.Half;
-    //            break;
-    //        case Speed.Half:
-    //            m_speed = Speed.Full;
-    //            break;
-    //        case Speed.Back:
-    //            m_speed = Speed.Stop;
-    //            break;
-    //        case Speed.Full:
-    //            break;
-    //    }
-    //}
-
-    //private void RPC_Backward(long sender)
-    //{
-    //    switch (m_speed)
-    //    {
-    //        case Speed.Stop:
-    //            m_speed = Speed.Back;
-    //            break;
-    //        case Speed.Slow:
-    //            m_speed = Speed.Stop;
-    //            break;
-    //        case Speed.Half:
-    //            m_speed = Speed.Slow;
-    //            break;
-    //        case Speed.Full:
-    //            m_speed = Speed.Half;
-    //            break;
-    //        case Speed.Back:
-    //            break;
-    //    }
-    //}
 
     private void FixedUpdate()
     {
@@ -182,11 +89,10 @@ public class Airship : MonoBehaviour
         //        break;
         //}
 
-        var body = GetComponentInChildren<Rigidbody>();
-        if (Math.Abs(body.velocity.y) < 1f)
-        {
-            body.velocity = new Vector3(body.velocity.x, 0, body.velocity.z);
-        }
+        //if (Math.Abs(m_body.velocity.y) < 1f)
+        //{
+        //    m_body.velocity = new Vector3(m_body.velocity.x, 0, m_body.velocity.z);
+        //}
         //if (m_moveDir.y != 0)
         //{
         //    body.constraints &= ~RigidbodyConstraints.FreezePositionY;
@@ -195,8 +101,20 @@ public class Airship : MonoBehaviour
         //{
         //    body.constraints |= RigidbodyConstraints.FreezePositionY;
         //}
-        body.AddForce(transform.TransformDirection(0, m_moveDir.y * Mod.GodshipLift.Value - Physics.gravity.y, m_moveDir.z * Mod.GodshipSpeed.Value) * Time.deltaTime, ForceMode.VelocityChange);
-        body.AddTorque(transform.up * m_moveDir.x * Mod.GodshipTurnSpeed.Value * Time.deltaTime, ForceMode.VelocityChange);
+
+        if (m_players.Count == 0)
+        {
+            ThrottleZ = 0;
+            ThrottleY = 0;
+        }
+        else
+        {
+            ThrottleZ = Mathf.Clamp(ThrottleZ + m_moveDir.z * Time.deltaTime * m_throttleChangeSpeed, -1, 1);
+            ThrottleY = Mathf.Clamp(ThrottleY + m_moveDir.y * Time.deltaTime * m_liftChangeSpeed, -1, 1);
+        }
+
+        m_body.AddForce(transform.TransformDirection(0, ThrottleY * m_lift, ThrottleZ * m_thrust) * Time.deltaTime, ForceMode.VelocityChange);
+        m_body.AddTorque(transform.up * m_moveDir.x * m_turnSpeed * Time.deltaTime, ForceMode.VelocityChange);
 
         //var body = GetComponentInChildren<Rigidbody>();
         //body.MovePosition(transform.position + transform.TransformDirection(0, m_moveDir.y * Mod.GodshipLift.Value * Time.deltaTime, m_moveDir.z * Mod.GodshipSpeed.Value * Time.deltaTime));
@@ -204,75 +122,65 @@ public class Airship : MonoBehaviour
         //body.MoveRotation(body.rotation * deltaRotation);
     }
 
-    //private void UpdateControlls(float dt)
-    //{
-    //    if (m_nview.IsOwner())
-    //    {
-    //        m_nview.GetZDO().Set("forward", (int)m_speed);
-    //        return;
-    //    }
-    //    m_speed = (Speed)m_nview.GetZDO().GetInt("forward");
-    //}
+    private void UpdateOwner()
+    {
+        if (m_nview.IsValid() && m_nview.IsOwner() && !(Player.m_localPlayer == null) && m_players.Count > 0 && !IsPlayerOnAirship(Player.m_localPlayer))
+        {
+            long owner = m_players[0].GetOwner();
+            m_nview.GetZDO().SetOwner(owner);
+            ZLog.Log("Changing ship owner to " + owner);
+        }
+    }
 
-    //private void UpdateOwner()
-    //{
-    //    if (m_nview.IsValid() && m_nview.IsOwner() && !(Player.m_localPlayer == null) && m_players.Count > 0 && !IsPlayerInBoat(Player.m_localPlayer))
-    //    {
-    //        long owner = m_players[0].GetOwner();
-    //        m_nview.GetZDO().SetOwner(owner);
-    //        ZLog.Log("Changing ship owner to " + owner);
-    //    }
-    //}
+    private void OnTriggerEnter(Collider collider)
+    {
+        Player component = collider.GetComponent<Player>();
+        if ((bool)component)
+        {
+            m_players.Add(component);
+            ZLog.Log("Player onboard, total onboard " + m_players.Count);
+            if (component == Player.m_localPlayer)
+            {
+                m_currentAirships.Add(this);
+            }
+        }
+    }
 
-    //private void OnTriggerEnter(Collider collider)
-    //{
-    //    Player component = collider.GetComponent<Player>();
-    //    if ((bool)component)
-    //    {
-    //        m_players.Add(component);
-    //        ZLog.Log("Player onboard, total onboard " + m_players.Count);
-    //        if (component == Player.m_localPlayer)
-    //        {
-    //            m_currentShips.Add(this);
-    //        }
-    //    }
-    //}
+    private void OnTriggerExit(Collider collider)
+    {
+        Player component = collider.GetComponent<Player>();
+        if ((bool)component)
+        {
+            m_players.Remove(component);
+            ZLog.Log("Player over board, players left " + m_players.Count);
+            if (component == Player.m_localPlayer)
+            {
+                m_currentAirships.Remove(this);
+            }
+        }
+    }
 
-    //private void OnTriggerExit(Collider collider)
-    //{
-    //    Player component = collider.GetComponent<Player>();
-    //    if ((bool)component)
-    //    {
-    //        m_players.Remove(component);
-    //        ZLog.Log("Player over board, players left " + m_players.Count);
-    //        if (component == Player.m_localPlayer)
-    //        {
-    //            m_currentShips.Remove(this);
-    //        }
-    //    }
-    //}
+    public bool IsPlayerOnAirship(ZDOID zdoid)
+    {
+        foreach (Player player in m_players)
+        {
+            if (player.GetZDOID() == zdoid)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    //public bool IsPlayerInBoat(ZDOID zdoid)
-    //{
-    //    foreach (Player player in m_players)
-    //    {
-    //        if (player.GetZDOID() == zdoid)
-    //        {
-    //            return true;
-    //        }
-    //    }
-    //    return false;
-    //}
+    public bool IsPlayerOnAirship(Player player)
+    {
+        return m_players.Contains(player);
+    }
 
-    //public bool IsPlayerInBoat(Player player)
-    //{
-    //    return m_players.Contains(player);
-    //}
-
-    //public bool HasPlayerOnboard()
-    //{
-    //    return m_players.Count > 0;
-    //}
+    public bool HasPlayerOnboard()
+    {
+        return m_players.Count > 0;
+    }
 
     private void OnDestroyed()
     {
@@ -280,17 +188,17 @@ public class Airship : MonoBehaviour
         {
             Gogan.LogEvent("Game", "ShipDestroyed", base.gameObject.name, 0L);
         }
-        //m_currentShips.Remove(this);
+        m_currentAirships.Remove(this);
     }
 
-    //public static Airship GetLocalShip()
-    //{
-    //    if (m_currentShips.Count == 0)
-    //    {
-    //        return null;
-    //    }
-    //    return m_currentShips[m_currentShips.Count - 1];
-    //}
+    public static Airship GetLocalShip()
+    {
+        if (m_currentAirships.Count == 0)
+        {
+            return null;
+        }
+        return m_currentAirships[m_currentAirships.Count - 1];
+    }
 
     public bool HaveControllingPlayer()
     {
@@ -305,11 +213,6 @@ public class Airship : MonoBehaviour
         }
         return m_nview.IsOwner();
     }
-
-    //public Speed GetSpeedSetting()
-    //{
-    //    return m_speed;
-    //}
 
     private void RPC_RequestControl(long sender, ZDOID playerID)
     {
@@ -347,7 +250,6 @@ public class Airship : MonoBehaviour
         {
             Player.m_localPlayer.GetAdditionalData().m_airship = this;
             ControlStartTime = Time.time;
-            GameCamera.m_instance.m_distance = 20f;
             Jotunn.Logger.LogInfo("Airship control granted.");
         }
         else
@@ -371,7 +273,6 @@ public class Airship : MonoBehaviour
         {
             return false;
         }
-
-        return true;
+        return IsPlayerOnAirship(user);
     }
 }

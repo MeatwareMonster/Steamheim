@@ -6,30 +6,52 @@
     "item": "Titan", 
     "description": "Feared by the gods.",
     "pieceTable": "Hammer",
+    "mass":  1000, 
+    "thrust": 100,
+    "lift": 100,
+    "drag": 10,
+    "turnSpeed": 0.25, 
     "enabled": true,
     "resources": [
       {
-        "item": "Wood",
-        "amount": 5
+        "item": "Iron",
+        "amount": 20
       },
       {
-        "item": "Stone",
-        "amount": 5
+        "item": "FineWood",
+        "amount": 100
+      },
+      {
+        "item": "SurtlingCore",
+        "amount": 10
       }
     ]
   },
   {
-    "name": "Airship",
+    "name": "SteamShip",
     "bundleName": "airships",
     "prefabPath": "Assets/CustomItems/Steampunk/Airship/Airship.prefab",
     "item": "Airship",
-    "description": "Patrol ship.",
-    "pieceTable":  "Hammer", 
+    "description": "A steam powered airship, propelled forward by what looks like water wheels!!",
+    "pieceTable": "Hammer",
+    "mass": 30,
+    "thrust": 10,
+    "lift": 30,
+    "drag": 1,
+    "turnSpeed": 0.5,
     "enabled": true,
     "resources": [
       {
-        "item": "Wood",
+        "item": "Iron",
         "amount": 10
+      },
+      {
+        "item": "FineWood",
+        "amount": 50
+      },
+      {
+        "item": "SurtlingCore",
+        "amount": 5
       }
     ]
   }

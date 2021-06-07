@@ -1,11 +1,15 @@
 ﻿using Airships.Models;
 using HarmonyLib;
+using Jotunn.Managers;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Airships.Patches
 {
     static class Player_Patch
     {
+        private static GameObject text;
+
         [HarmonyPatch(typeof(Player), nameof(Player.AttachStart))]
         class Player_AttachStart_Patch
         {
@@ -16,6 +20,8 @@ namespace Airships.Patches
                 {
                     //airship.ControlStartTime = Time.time;
                     //__instance.GetAdditionalData().m_airship = airship;
+                    text = GUIManager.Instance.CreateText("JötunnLib, the Valheim Lib", GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.7f),
+                        new Vector2(0f, 450f), GUIManager.Instance.AveriaSerifBold, 18, GUIManager.Instance.ValheimOrange, true, Color.black, 400f, 30f, false);
                     airship.m_nview.InvokeRPC("RequestControl", __instance.GetZDOID());
                 }
             }
@@ -32,7 +38,7 @@ namespace Airships.Patches
                     if (airship != null)
                     {
                         Player.m_localPlayer.GetAdditionalData().m_airship = null;
-                        GameCamera.m_instance.m_distance = 4f;
+                        Object.Destroy(text);
                         airship.m_nview.InvokeRPC("ReleaseControl", __instance.GetZDOID());
                     }
                 }
@@ -53,6 +59,7 @@ namespace Airships.Patches
 
                 if ((ZInput.GetButtonDown("Use") || ZInput.GetButtonDown("JoyUse")) && airship.ControlStartTime < Time.time - 1f)
                 {
+                    airship.ApplyMovementControls(Vector3.zero);
                     __instance.AttachStop();
                     return true;
                 }
@@ -67,6 +74,7 @@ namespace Airships.Patches
                 }
 
                 airship.ApplyMovementControls(movedir);
+                text.GetComponent<Text>().text = $"Thrust: {(airship.ThrottleZ * 100):F0}%\nLift: {(airship.ThrottleY * 100):F0}%";
                 return false;
             }
         }
