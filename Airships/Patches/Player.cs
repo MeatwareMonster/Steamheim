@@ -1,8 +1,10 @@
-﻿using Airships.Models;
+﻿using System;
+using Airships.Models;
 using HarmonyLib;
 using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Airships.Patches
 {
@@ -17,18 +19,22 @@ namespace Airships.Patches
         {
             private static void Postfix(Player __instance, Transform attachPoint)
             {
-                var airship = attachPoint.gameObject.GetComponentInParent<Airship>();
-                if (airship != null)
+                if (__instance.m_attachPoint != null && __instance.m_attachPoint.GetComponentInParent<Chair>().m_name
+                    .Equals("controls", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    //airship.ControlStartTime = Time.time;
-                    //__instance.GetAdditionalData().m_airship = airship;
-                    storedCameraDistance = GameCamera.instance.m_distance;
-                    storedMaxCameraDistance = GameCamera.instance.m_maxDistance;
-                    GameCamera.instance.m_distance = airship.m_cameraDistance;
-                    GameCamera.instance.m_maxDistance = airship.m_cameraDistance;
-                    text = GUIManager.Instance.CreateText("JötunnLib, the Valheim Lib", GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.7f),
-                        new Vector2(0f, 450f), GUIManager.Instance.AveriaSerifBold, 18, GUIManager.Instance.ValheimOrange, true, Color.black, 400f, 30f, false);
-                    airship.m_nview.InvokeRPC("RequestControl", __instance.GetZDOID());
+                    var airship = attachPoint.gameObject.GetComponentInParent<Airship>();
+                    if (airship != null)
+                    {
+                        storedCameraDistance = GameCamera.instance.m_distance;
+                        storedMaxCameraDistance = GameCamera.instance.m_maxDistance;
+                        GameCamera.instance.m_distance = airship.m_cameraDistance;
+                        GameCamera.instance.m_maxDistance = airship.m_cameraDistance;
+                        text = GUIManager.Instance.CreateText("Taking control...",
+                            GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.7f),
+                            new Vector2(0f, 450f), GUIManager.Instance.AveriaSerifBold, 18,
+                            GUIManager.Instance.ValheimOrange, true, Color.black, 400f, 30f, false);
+                        airship.m_nview.InvokeRPC("RequestControl", __instance.GetZDOID());
+                    }
                 }
             }
         }
@@ -38,7 +44,7 @@ namespace Airships.Patches
         {
             private static void Prefix(Player __instance)
             {
-                if (__instance.m_attachPoint != null)
+                if (__instance.m_attachPoint != null && __instance.m_attachPoint.GetComponentInParent<Chair>().m_name.Equals("controls", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var airship = __instance.m_attachPoint.gameObject.GetComponentInParent<Airship>();
                     if (airship != null)
@@ -82,7 +88,7 @@ namespace Airships.Patches
                 }
 
                 airship.ApplyMovementControls(movedir);
-                text.GetComponent<Text>().text = $"Thrust: {(airship.ThrottleZ * 100):F0}%\nLift: {(airship.ThrottleY * 100):F0}%";
+                text.GetComponent<Text>().text = $"Thrust: {airship.m_nview.m_zdo.GetFloat("ThrottleZ") * 100:F0}%\nLift: {airship.m_nview.m_zdo.GetFloat("ThrottleY") * 100:F0}%";
                 return false;
             }
         }

@@ -7,8 +7,6 @@ public class Airship : MonoBehaviour
 {
     public Player m_controllingPlayer;
 
-    public Vector3 m_moveDir;
-
     private List<Player> m_players = new List<Player>();
 
     private static List<Airship> m_currentAirships = new List<Airship>();
@@ -19,6 +17,8 @@ public class Airship : MonoBehaviour
 
     public float ControlStartTime;
 
+    public Vector3 m_moveDir;
+
     public float m_cameraDistance;
 
     public float m_lift;
@@ -27,9 +27,6 @@ public class Airship : MonoBehaviour
 
     public float m_throttleChangeSpeed = 0.5f;
     public float m_liftChangeSpeed = 0.5f;
-
-    public float ThrottleZ;
-    public float ThrottleY;
 
     private void Awake()
     {
@@ -75,59 +72,30 @@ public class Airship : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //bool flag = HaveControllingPlayer();
-        //UpdateControlls(Time.fixedDeltaTime);
         if ((bool)m_nview && !m_nview.IsOwner())
         {
             return;
         }
-        //if (!flag && (m_speed == Speed.Slow || m_speed == Speed.Back))
-        //{
-        //    m_speed = Speed.Stop;
-        //}
 
-        //Vector3 zero = Vector3.zero;
-        //switch (m_speed)
-        //{
-        //    case Speed.Slow:
-        //        //zero += base.transform.forward * m_backwardForce * (1f - Mathf.Abs(m_rudderValue));
-        //        break;
-        //    case Speed.Back:
-        //        //zero += -base.transform.forward * m_backwardForce * (1f - Mathf.Abs(m_rudderValue));
-        //        break;
-        //}
-
-        //if (Math.Abs(m_body.velocity.y) < 1f)
-        //{
-        //    m_body.velocity = new Vector3(m_body.velocity.x, 0, m_body.velocity.z);
-        //}
-        //if (m_moveDir.y != 0)
-        //{
-        //    body.constraints &= ~RigidbodyConstraints.FreezePositionY;
-        //}
-        //else
-        //{
-        //    body.constraints |= RigidbodyConstraints.FreezePositionY;
-        //}
+        var throttleZ = m_nview.m_zdo.GetFloat("ThrottleZ");
+        var throttleY = m_nview.m_zdo.GetFloat("ThrottleY");
 
         if (m_players.Count == 0)
         {
-            ThrottleZ = 0;
-            ThrottleY = 0;
+            throttleZ = 0;
+            throttleY = 0;
         }
         else
         {
-            ThrottleZ = Mathf.Clamp(ThrottleZ + m_moveDir.z * Time.deltaTime * m_throttleChangeSpeed, -1, 1);
-            ThrottleY = Mathf.Clamp(ThrottleY + m_moveDir.y * Time.deltaTime * m_liftChangeSpeed, -1, 1);
+            throttleZ = Mathf.Clamp(throttleZ + m_moveDir.z * Time.deltaTime * m_throttleChangeSpeed, -1, 1);
+            throttleY = Mathf.Clamp(throttleY + m_moveDir.y * Time.deltaTime * m_liftChangeSpeed, -1, 1);
         }
 
-        m_body.AddForce(transform.TransformDirection(0, ThrottleY * m_lift, ThrottleZ * m_thrust) * Time.deltaTime, ForceMode.VelocityChange);
-        m_body.AddTorque(transform.up * m_moveDir.x * m_turnSpeed * Time.deltaTime, ForceMode.VelocityChange);
+        m_nview.m_zdo.Set("ThrottleZ", throttleZ);
+        m_nview.m_zdo.Set("ThrottleY", throttleY);
 
-        //var body = GetComponentInChildren<Rigidbody>();
-        //body.MovePosition(transform.position + transform.TransformDirection(0, m_moveDir.y * Mod.GodshipLift.Value * Time.deltaTime, m_moveDir.z * Mod.GodshipSpeed.Value * Time.deltaTime));
-        //Quaternion deltaRotation = Quaternion.Euler(new Vector3(0, m_moveDir.x * Mod.GodshipTurnSpeed.Value, 0) * Time.fixedDeltaTime);
-        //body.MoveRotation(body.rotation * deltaRotation);
+        m_body.AddForce(transform.TransformDirection(0, throttleY * m_lift, throttleZ * m_thrust) * Time.deltaTime, ForceMode.VelocityChange);
+        m_body.AddTorque(transform.up * m_moveDir.x * m_turnSpeed * Time.deltaTime, ForceMode.VelocityChange);
     }
 
     private void UpdateOwner()
@@ -230,6 +198,7 @@ public class Airship : MonoBehaviour
             {
                 Jotunn.Logger.LogInfo("Requesting airship control.");
                 m_nview.GetZDO().Set("user", playerID);
+                m_nview.m_zdo.SetOwner(ZDOMan.instance.GetZDO(playerID).m_owner);
                 m_nview.InvokeRPC(sender, "RequestRespons", true);
             }
             else

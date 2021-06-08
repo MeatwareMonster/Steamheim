@@ -1,5 +1,5 @@
 ﻿// Airships
-// a Valheim mod skeleton using Jötunn
+// Adds flying airships to the game.
 // 
 // File:    Airships.cs
 // Project: Airships
@@ -17,12 +17,12 @@ namespace Airships
 {
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency(Jotunn.Main.ModGuid)]
-    //[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     internal class Mod : BaseUnityPlugin
     {
         public const string PluginGUID = "steamheim.Airships";
         public const string PluginName = "Steamheim Airships";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "0.1.0";
 
         private readonly Harmony harmony = new Harmony(PluginGUID);
 
@@ -30,10 +30,6 @@ namespace Airships
 
         private void Awake()
         {
-
-            // Jotunn comes with its own Logger class to provide a consistent Log style for all mods using it
-            Jotunn.Logger.LogInfo("ModStub has landed");
-
             LoadAssetBundles();
             AddAirships();
             UnloadAssetBundles();
@@ -64,7 +60,7 @@ namespace Airships
             {
                 if (airshipConfig.enabled)
                 {
-                    // Load prefab from asset bundle
+                    // Load prefab from asset bundle and apply config
                     var prefab = EmbeddedResourceBundles[airshipConfig.bundleName].LoadAsset<GameObject>(airshipConfig.prefabPath);
                     var airship = prefab.AddComponent<Airship>();
                     airship.m_thrust = airshipConfig.thrust;
@@ -72,11 +68,6 @@ namespace Airships
                     airship.m_turnSpeed = airshipConfig.turnSpeed;
                     airship.m_cameraDistance = airshipConfig.cameraDistance;
                     var airshipBody = prefab.GetComponent<Rigidbody>();
-                    //airshipBody.freezeRotation = true;
-                    //airshipBody.constraints =
-                    //    RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-                    //airshipBody.centerOfMass = Vector3.zero;
-                    //airshipBody.inertiaTensorRotation = Quaternion.identity;
                     airshipBody.mass = airshipConfig.mass;
                     airshipBody.drag = airshipConfig.drag;
                     var airshipPiece = AirshipConfig.Convert(prefab, airshipConfig);
