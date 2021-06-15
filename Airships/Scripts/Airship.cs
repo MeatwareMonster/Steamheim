@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Airships.Models;
+using Airships.Patches;
+using Jotunn.Managers;
 using UnityEngine;
 
 public class Airship : MonoBehaviour
@@ -227,12 +229,21 @@ public class Airship : MonoBehaviour
         {
             Player.m_localPlayer.GetAdditionalData().m_airship = this;
             ControlStartTime = Time.time;
+            Player_Patch.storedCameraDistance = GameCamera.instance.m_distance;
+            Player_Patch.storedMaxCameraDistance = GameCamera.instance.m_maxDistance;
+            GameCamera.instance.m_distance = m_cameraDistance;
+            GameCamera.instance.m_maxDistance = m_cameraDistance;
+            Player_Patch.text = GUIManager.Instance.CreateText("Taking control...",
+                GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.7f),
+                new Vector2(0f, 450f), GUIManager.Instance.AveriaSerifBold, 18,
+                GUIManager.Instance.ValheimOrange, true, Color.black, 400f, 30f, false);
             Jotunn.Logger.LogInfo("Airship control granted.");
         }
         else
         {
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_inuse");
         }
+        Player_Patch.isAwaitingControl = false;
     }
 
     private ZDOID GetUser()

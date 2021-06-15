@@ -18,7 +18,8 @@ namespace Airships.Models
             return new RequirementConfig()
             {
                 Amount = airshipConfigRequirement.amount,
-                Item = airshipConfigRequirement.item
+                Item = airshipConfigRequirement.item,
+                Recover = true
             };
         }
     }

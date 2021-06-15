@@ -1,18 +1,18 @@
 ﻿using System;
 using Airships.Models;
 using HarmonyLib;
-using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace Airships.Patches
 {
-    static class Player_Patch
+    public static class Player_Patch
     {
-        private static GameObject text;
-        private static float storedCameraDistance;
-        private static float storedMaxCameraDistance;
+        public static GameObject text;
+        public static float storedCameraDistance;
+        public static float storedMaxCameraDistance;
+        public static bool isAwaitingControl;
 
         [HarmonyPatch(typeof(Player), nameof(Player.AttachStart))]
         class Player_AttachStart_Patch
@@ -25,14 +25,7 @@ namespace Airships.Patches
                     var airship = attachPoint.gameObject.GetComponentInParent<Airship>();
                     if (airship != null)
                     {
-                        storedCameraDistance = GameCamera.instance.m_distance;
-                        storedMaxCameraDistance = GameCamera.instance.m_maxDistance;
-                        GameCamera.instance.m_distance = airship.m_cameraDistance;
-                        GameCamera.instance.m_maxDistance = airship.m_cameraDistance;
-                        text = GUIManager.Instance.CreateText("Taking control...",
-                            GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.7f),
-                            new Vector2(0f, 450f), GUIManager.Instance.AveriaSerifBold, 18,
-                            GUIManager.Instance.ValheimOrange, true, Color.black, 400f, 30f, false);
+                        isAwaitingControl = true;
                         airship.m_nview.InvokeRPC("RequestControl", __instance.GetZDOID());
                     }
                 }
@@ -64,6 +57,8 @@ namespace Airships.Patches
         {
             private static bool Prefix(Player __instance, Vector3 movedir)
             {
+                if (isAwaitingControl) return false;
+
                 var airship = __instance.GetAdditionalData().m_airship;
 
                 if (airship == null)
