@@ -55,7 +55,7 @@ namespace Airships
 
         private void AddAirships()
         {
-            var airshipConfigs = AirshipConfigManager.LoadShipsFromJson("Airships/Assets/airshipConfig.json");
+            var airshipConfigs = AirshipConfigManager.LoadShipsFromJson("Steamheim/Airships/Assets/airshipConfig.json");
             airshipConfigs.ForEach(airshipConfig =>
             {
                 if (airshipConfig.enabled)
