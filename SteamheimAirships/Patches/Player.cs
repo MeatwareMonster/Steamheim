@@ -19,9 +19,11 @@ namespace Airships.Patches
         {
             private static void Postfix(Player __instance, Transform attachPoint)
             {
-                if (__instance.m_attachPoint != null && __instance.m_attachPoint.GetComponentInParent<Chair>().m_name
-                    .Equals("controls", StringComparison.InvariantCultureIgnoreCase))
+                if (__instance.m_attachPoint != null)
                 {
+                    var chair = __instance.m_attachPoint.GetComponentInParent<Chair>();
+                    if (chair == null || !chair.m_name.Equals("controls", StringComparison.InvariantCultureIgnoreCase)) return;
+
                     var airship = attachPoint.gameObject.GetComponentInParent<Airship>();
                     if (airship != null)
                     {
@@ -37,8 +39,11 @@ namespace Airships.Patches
         {
             private static void Prefix(Player __instance)
             {
-                if (__instance.m_attachPoint != null && __instance.m_attachPoint.GetComponentInParent<Chair>().m_name.Equals("controls", StringComparison.InvariantCultureIgnoreCase))
+                if (__instance.m_attachPoint != null)
                 {
+                    var chair = __instance.m_attachPoint.GetComponentInParent<Chair>();
+                    if (chair == null || !chair.m_name.Equals("controls", StringComparison.InvariantCultureIgnoreCase)) return;
+
                     var airship = __instance.m_attachPoint.gameObject.GetComponentInParent<Airship>();
                     if (airship != null)
                     {

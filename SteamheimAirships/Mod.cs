@@ -20,9 +20,9 @@ namespace Airships
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     internal class Mod : BaseUnityPlugin
     {
-        public const string PluginGUID = "steamheim.Airships";
+        public const string PluginGUID = "MeatwareMonster.SteamheimAirships";
         public const string PluginName = "Steamheim Airships";
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = "1.0.1";
 
         private readonly Harmony harmony = new Harmony(PluginGUID);
 
@@ -55,7 +55,7 @@ namespace Airships
 
         private void AddAirships()
         {
-            var airshipConfigs = AirshipConfigManager.LoadShipsFromJson("Steamheim/Airships/Assets/airshipConfig.json");
+            var airshipConfigs = AirshipConfigManager.LoadShipsFromJson("SteamheimAirships/Assets/airshipConfig.json");
             airshipConfigs.ForEach(airshipConfig =>
             {
                 if (airshipConfig.enabled)

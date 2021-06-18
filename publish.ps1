@@ -35,7 +35,7 @@ if ($Target.Equals("Debug")) {
     
     $name = "$TargetAssembly" -Replace('.dll')
 
-    $plug = New-Item -Type Directory -Path "$ValheimPath\BepInEx\plugins\Steamheim\$name" -Force
+    $plug = New-Item -Type Directory -Path "$ValheimPath\BepInEx\plugins\$name" -Force
     Write-Host "Copy $TargetAssembly to $plug"
     Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$plug" -Force
     
@@ -64,7 +64,7 @@ if($Target.Equals("Release")) {
 
     Write-Host "$PackagePath\$TargetAssembly"
     New-Item -Type Directory -Path "$PackagePath\plugins" -Force
-    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$PackagePath\plugins\Steamheim\$TargetAssembly"
+    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$PackagePath\plugins\$TargetAssembly"
     Copy-Item -Path "$PackagePath\README.md" -Destination "$ProjectPath\README.md"
     Compress-Archive -Path "$PackagePath\*" -DestinationPath "$TargetPath\$TargetAssembly.zip" -Force
 }
