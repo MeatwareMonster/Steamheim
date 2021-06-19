@@ -1,10 +1,7 @@
 ﻿{
-  "name": "Airships",
-  "description": "",
-  "version_number": "1.0.0",
-  "website_url": "",
-  "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.601",
-    ""
-  ]
+  "name": "SteamheimAirships",
+  "description": "Brings some steampunk into Valheim with two new airships!",
+  "version_number": "1.0.3",
+  "website_url": "https://github.com/MeatwareMonster/Steamheim",
+  "dependencies": ["ValheimModding-Jotunn-2.0.12"]
 }

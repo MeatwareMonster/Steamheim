@@ -1,10 +1,11 @@
-﻿// Airships
+﻿// SteamheimAirships
 // Adds flying airships to the game.
 // 
-// File:    Airships.cs
-// Project: Airships
+// File:    Mod.cs
+// Project: SteamheimAirships
 
 using System.Collections.Generic;
+using System.IO;
 using Airships.Models;
 using Airships.Services;
 using BepInEx;
@@ -55,7 +56,7 @@ namespace Airships
 
         private void AddAirships()
         {
-            var airshipConfigs = AirshipConfigManager.LoadShipsFromJson("SteamheimAirships/Assets/airshipConfig.json");
+            var airshipConfigs = AirshipConfigManager.LoadShipsFromJson($"{Path.GetDirectoryName(typeof(Mod).Assembly.Location)}/Assets/airshipConfig.json");
             airshipConfigs.ForEach(airshipConfig =>
             {
                 if (airshipConfig.enabled)

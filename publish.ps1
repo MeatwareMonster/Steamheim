@@ -64,7 +64,9 @@ if($Target.Equals("Release")) {
 
     Write-Host "$PackagePath\$TargetAssembly"
     New-Item -Type Directory -Path "$PackagePath\plugins" -Force
+	New-Item -Type Directory -Path "$PackagePath\plugins\Assets" -Force
     Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$PackagePath\plugins\$TargetAssembly"
+	Copy-Item -Path "$TargetPath\Assets\*" -Destination "$PackagePath\plugins\Assets" -Recurse
     Copy-Item -Path "$PackagePath\README.md" -Destination "$ProjectPath\README.md"
     Compress-Archive -Path "$PackagePath\*" -DestinationPath "$TargetPath\$TargetAssembly.zip" -Force
 }
