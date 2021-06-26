@@ -7,12 +7,13 @@ Showcase: https://www.youtube.com/watch?v=AhuGtn5LhQU
 Adaptation of the large ship and the coding was done by myself, with the model and effects for the small ship put together by MagikarppSushii021194! It looks great and has some effects that aren't even enabled yet, make sure to tell him it's excellent! Also shoutout to Zethin64 for helping me test!
 
 Details:
-Each ship has one control seat and some other seating for passengers, as well as some storage.
-Ships are controlled using standard directional movement to adjust thrust and turn the ship, and jump and crouch to adjust lift.
-Thrust and lift will ﻿stay at their set position until someone changes them, or everyone gets off the ship.
-The large ship is not affected by gravity, but the small ship is so it can land on the carrier.
 
-DO NOT LOG OUT ON TOP OF THE SHIP IN MULTIPLAYER. YOU WILL SPAWN IN THE AIR IF IT IS MOVED, AND YOU WILL DIE.
+- Each ship has one control seat and some other seating for passengers, as well as some storage.
+- Ships are controlled using standard directional movement to adjust thrust and turn the ship, and jump and crouch to adjust lift.
+- Thrust and lift will stay at their set position until someone changes them, or everyone gets off the ship.
+- The large ship is not affected by gravity, but the small ship is so it can land on the carrier.
+
+DO NOT LOG OUT ON TOP OF THE SHIP IN MULTIPLAYER. YOU WILL SPAWN IN THE AIR IF IT IS MOVED, AND YOU WILL DIE. \
 I'm hoping to add some safety checks in a future update, but for now, just DON'T DO IT.
 
 Multiplayer was tested, but there may still be some networking bugs. Please report them if you run into any, and I will address them as soon as possible.

@@ -90,16 +90,17 @@
     <Compile Include="Services\AirshipConfigManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="airships" />
+    <EmbeddedResource Include="Assets\AssetBundles\airships" />
     <None Include="app.config" />
-    <None Include="Assets\airshipConfig.json">
+    <None Include="Assets\Configs\steamheim.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="godships" />
+    <EmbeddedResource Include="Assets\AssetBundles\godships" />
     <None Include="packages.config" />
     <None Include="Package\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Assets\CustomConfigs\" />
     <Folder Include="Package\plugins\" />
   </ItemGroup>
   <ItemGroup>

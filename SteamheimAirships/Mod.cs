@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Airships.Models;
 using Airships.Services;
 using BepInEx;
@@ -23,11 +24,13 @@ namespace Airships
     {
         public const string PluginGUID = "MeatwareMonster.SteamheimAirships";
         public const string PluginName = "Steamheim Airships";
-        public const string PluginVersion = "1.0.1";
+        public const string PluginVersion = "1.1.0";
+
+        public static string ModLocation = Path.GetDirectoryName(typeof(Mod).Assembly.Location);
 
         private readonly Harmony harmony = new Harmony(PluginGUID);
 
-        private readonly Dictionary<string, AssetBundle> EmbeddedResourceBundles = new Dictionary<string, AssetBundle>();
+        private readonly Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
 
         private void Awake()
         {
@@ -41,28 +44,50 @@ namespace Airships
         private void LoadAssetBundles()
         {
             // Load asset bundle from embedded resources
-            Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(Mod).Assembly.GetManifestResourceNames())}");
-            EmbeddedResourceBundles["godships"] = AssetUtils.LoadAssetBundleFromResources("godships", typeof(Mod).Assembly);
-            EmbeddedResourceBundles["airships"] = AssetUtils.LoadAssetBundleFromResources("airships", typeof(Mod).Assembly);
+            //Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(Mod).Assembly.GetManifestResourceNames())}");
+            //AssetBundles["godships"] = AssetUtils.LoadAssetBundleFromResources("godships", typeof(Mod).Assembly);
+            //AssetBundles["airships"] = AssetUtils.LoadAssetBundleFromResources("airships", typeof(Mod).Assembly);
+
+            foreach (var file in Directory.GetFiles($"{ModLocation}/Assets/AssetBundles"))
+            {
+                AssetBundles.Add(Path.GetFileName(file), AssetUtils.LoadAssetBundle(file));
+            }
         }
 
         private void UnloadAssetBundles()
         {
-            foreach (var embeddedResourceBundle in EmbeddedResourceBundles)
+            foreach (var assetBundle in AssetBundles)
             {
-                embeddedResourceBundle.Value.Unload(false);
+                assetBundle.Value.Unload(false);
             }
         }
 
         private void AddAirships()
         {
-            var airshipConfigs = AirshipConfigManager.LoadShipsFromJson($"{Path.GetDirectoryName(typeof(Mod).Assembly.Location)}/Assets/airshipConfig.json");
+            var airshipConfigs = new List<AirshipConfig>();
+            var customConfigFiles = Directory.GetFiles($"{ModLocation}/Assets/CustomConfigs").ToDictionary(file => Path.GetFileName(file));
+
+            foreach (var file in Directory.GetFiles($"{ModLocation}/Assets/Configs"))
+            {
+                string configPath;
+                if (customConfigFiles.TryGetValue(Path.GetFileName(file), out var customConfigFile))
+                {
+                    configPath = customConfigFile;
+                }
+                else
+                {
+                    configPath = file;
+                }
+
+                airshipConfigs.AddRange(AirshipConfigManager.LoadShipsFromJson(configPath));
+            }
+
             airshipConfigs.ForEach(airshipConfig =>
             {
                 if (airshipConfig.enabled)
                 {
                     // Load prefab from asset bundle and apply config
-                    var prefab = EmbeddedResourceBundles[airshipConfig.bundleName].LoadAsset<GameObject>(airshipConfig.prefabPath);
+                    var prefab = AssetBundles[airshipConfig.bundleName].LoadAsset<GameObject>(airshipConfig.prefabPath);
                     var airship = prefab.AddComponent<Airship>();
                     airship.m_thrust = airshipConfig.thrust;
                     airship.m_lift = airshipConfig.lift;
@@ -72,8 +97,11 @@ namespace Airships
                     airshipBody.mass = airshipConfig.mass;
                     airshipBody.drag = airshipConfig.drag;
                     var airshipPiece = AirshipConfig.Convert(prefab, airshipConfig);
-                    airshipPiece.Piece.m_name = airshipConfig.name;
-                    PieceManager.Instance.AddPiece(AirshipConfig.Convert(prefab, airshipConfig));
+
+                    // Jotunn code is currently not setting the description, potentially a bug
+                    airshipPiece.Piece.m_description = airshipConfig.description;
+
+                    PieceManager.Instance.AddPiece(airshipPiece);
                 }
             });
         }

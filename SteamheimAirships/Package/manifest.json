@@ -1,7 +1,7 @@
 ﻿{
   "name": "SteamheimAirships",
   "description": "Brings some steampunk into Valheim with two new airships!",
-  "version_number": "1.0.3",
+  "version_number": "1.1.0",
   "website_url": "https://github.com/MeatwareMonster/Steamheim",
   "dependencies": ["ValheimModding-Jotunn-2.0.12"]
 }
