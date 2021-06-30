@@ -26,9 +26,13 @@ public class Airship : MonoBehaviour
     public float m_lift;
     public float m_thrust;
     public float m_turnSpeed;
+    public float m_drag;
 
     public float m_throttleChangeSpeed = 0.5f;
     public float m_liftChangeSpeed = 0.5f;
+
+    private float sideDragFactor = 1f;
+    private float loadThreshold = 0.1f;
 
     private void Awake()
     {
@@ -96,7 +100,18 @@ public class Airship : MonoBehaviour
         m_nview.m_zdo.Set("ThrottleZ", throttleZ);
         m_nview.m_zdo.Set("ThrottleY", throttleY);
 
-        m_body.AddForce(transform.TransformDirection(0, throttleY * m_lift, throttleZ * m_thrust) * Time.deltaTime, ForceMode.VelocityChange);
+        // Apply drag
+        var velocity = transform.InverseTransformDirection(m_body.velocity);
+        float force_x = -m_drag * velocity.x;
+        float force_z = -m_drag / sideDragFactor * velocity.z;
+        m_body.AddRelativeForce(new Vector3(force_x, 0, force_z) * Time.deltaTime, ForceMode.VelocityChange);
+
+        //// Prevent carriers from being pushed down by light loads?
+        //float force_y = Math.Abs(velocity.y) < loadThreshold && !m_body.useGravity ? -velocity.y : 0;
+        //Jotunn.Logger.LogInfo($"Force: {force_y}");
+        //m_body.AddRelativeForce(new Vector3(force_x, force_y, force_z) * Time.deltaTime, ForceMode.VelocityChange);
+
+        m_body.AddRelativeForce(new Vector3(0, throttleY * m_lift, throttleZ * m_thrust) * Time.deltaTime, ForceMode.VelocityChange);
         m_body.AddTorque(transform.up * m_moveDir.x * m_turnSpeed * Time.deltaTime, ForceMode.VelocityChange);
     }
 

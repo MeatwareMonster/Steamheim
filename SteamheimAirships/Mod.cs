@@ -93,9 +93,10 @@ namespace Airships
                     airship.m_lift = airshipConfig.lift;
                     airship.m_turnSpeed = airshipConfig.turnSpeed;
                     airship.m_cameraDistance = airshipConfig.cameraDistance;
+                    airship.m_drag = airshipConfig.drag;
                     var airshipBody = prefab.GetComponent<Rigidbody>();
                     airshipBody.mass = airshipConfig.mass;
-                    airshipBody.drag = airshipConfig.drag;
+                    airshipBody.drag = 1f;
                     var airshipPiece = AirshipConfig.Convert(prefab, airshipConfig);
 
                     // Jotunn code is currently not setting the description, potentially a bug
