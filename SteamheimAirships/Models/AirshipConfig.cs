@@ -49,6 +49,7 @@ namespace Airships.Models
                     Description = airshipConfig.description,
                     Enabled = airshipConfig.enabled,
                     PieceTable = airshipConfig.pieceTable,
+                    Category = "Airships",
                     Requirements = airshipConfig.resources.Select(AirshipConfigRequirement.Convert).ToArray()
                 }
             );

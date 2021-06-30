@@ -32,7 +32,7 @@ public class Airship : MonoBehaviour
     public float m_liftChangeSpeed = 0.5f;
 
     private float sideDragFactor = 1f;
-    private float loadThreshold = 0.1f;
+    //private float loadThreshold = 0.1f;
 
     private void Awake()
     {
