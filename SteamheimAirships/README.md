@@ -6,7 +6,9 @@ Showcase: https://www.youtube.com/watch?v=AhuGtn5LhQU
 
 Adaptation of the large ship and the coding was done by myself, with the model and effects for the small ship put together by MagikarppSushii021194! It looks great and has some effects that aren't even enabled yet, make sure to tell him it's excellent! Also shoutout to Zethin64 for helping me test!
 
-### Version 1.1.0
+### Version 1.1.3
+
+MAKE SURE TO UPDATE TO JVL 2.1.0
 
 - Fixes config and asset bundle lookup to allow the renaming of the folder to any name.
 - Allows the addition of custom ships through the use of asset bundles and configs.
@@ -18,11 +20,11 @@ Adaptation of the large ship and the coding was done by myself, with the model a
 
 - Guide: https://www.notion.so/Custom-Airships-e04d023133494a8b9be0d2a59862ff92
 
-To use the sample working Tolroko Flyer, download the optional Tolroko file from the files page. Then, place the AssetBundles/tolroko file in the mod's Assets/AssetBundles folder, and the Configs/tolroko.json file in the mod's Assets/Configs folder. If you are reading this on Thunderstore, I can't add optional files, so go grab them from Nexus Mods.
+To use the sample working Tolroko Flyer, download the optional Tolroko file from the files page. Then, place the AssetBundles/tolroko file in the mod's Assets/AssetBundles folder, and the Configs/tolroko.json file in the mod's Assets/Configs folder. If you are reading this on Thunderstore, I can't add optional files, so go grab them from Nexus Mods here https://www.nexusmods.com/valheim/mods/1322?tab=files.
 
 If you would like to edit ship configs, you should copy the config to SteamheimAirships\Assets\CustomConfigs before changing it. I realized that without this option, your configs will be overwritten after each version update of this mod. If that already happened to you, I'm sorry, that's on me, but this should prevent it in the future.
 
-### Details:
+### Details
 
 - Each ship has one control seat and some other seating for passengers, as well as some storage.
 - Ships are controlled using standard directional movement to adjust thrust and turn the ship, and jump and crouch to adjust lift.
@@ -40,7 +42,7 @@ YouTube: https://www.youtube.com/channel/UCQmgRGWDJFXVYoin2UzUt7Q \
 Twitter: https://twitter.com/MeatwareMonster \
 ​Reddit: https://www.reddit.com/user/MeatwareMonster/
 
-### Mod developers:
+### Mod developers
 
 Code: https://github.com/MeatwareMonster/Steamheim
 
